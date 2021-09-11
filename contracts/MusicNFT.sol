@@ -256,9 +256,23 @@ contract MusicNFT is
         j--;
       }
     }
+    
+    address temp;
+    uint256 share;
+    uint256 m=0;
+    uint256 n;
     if(flag == false){
-      _distributeTax(_tokenId,tax[_tokenId]);
+      // _distributeTax(_tokenId,tax[_tokenId]);
       cost = tax[_tokenId];
+      n = owners[_tokenId].length;
+      while(n!=0){
+        temp = owners[_tokenId][m];
+        share = sharers[_tokenId][temp];
+        m++;
+        n--;
+        // mapping (uint256 => mapping(address => uint256)) internal sharers;
+        payable(temp).transfer( (share * tax[_tokenId] / 100) * 1 ether);
+      }
     }
       
   }
@@ -278,7 +292,7 @@ contract MusicNFT is
       internal
       ifOwner(_tokenId)
     {
-    require(ifSharable(_tokenId),"TOKEN_UNSHARABLE");
+    // require(ifSharable(_tokenId),"TOKEN_UNSHARABLE");
     require(sharers[_tokenId][newSharer]==0,"ALREADY_A_SHARER");
     require(share >=1 && share <=leftShare[_tokenId],"SHARE_INVALID");
     sharersCount[_tokenId] = sharersCount[_tokenId] + 1;
@@ -287,25 +301,25 @@ contract MusicNFT is
     owners[_tokenId].push(msg.sender);
   }
 
-  function _distributeTax(
-    uint256 _tokenId,
-    uint256 amount
-  )
-    internal
-  {
-    address temp;
-    uint256 share;
-    uint256 i = 0;
-    uint256 j = owners[_tokenId].length;
-    while(j!=0){
-      temp = owners[_tokenId][i];
-      share = sharers[_tokenId][temp];
-      i++;
-      j--;
-      // mapping (uint256 => mapping(address => uint256)) internal sharers;
-      payable(temp).transfer(share*amount/100 * 1 ether);
-    }
-  }
+  // function _distributeTax(
+  //   uint256 _tokenId,
+  //   uint256 amount
+  // )
+  //   internal
+  // {
+  //   address temp;
+  //   uint256 share;
+  //   uint256 i = 0;
+  //   uint256 j = owners[_tokenId].length;
+  //   while(j!=0){
+  //     temp = owners[_tokenId][i];
+  //     share = sharers[_tokenId][temp];
+  //     i++;
+  //     j--;
+  //     // mapping (uint256 => mapping(address => uint256)) internal sharers;
+  //     payable(temp).transfer(share*amount/100 * 1 ether);
+  //   }
+  // }
 
   function _setSharable(
     uint256 _tokenId,
