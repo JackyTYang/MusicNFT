@@ -212,15 +212,15 @@ contract MusicNFT is
     return owners[_tokenId];
   }
 
-  // function showInfoOfNFT1 (
-  //   uint256 _tokenId
-  // )
-  //   external
-  //   view
-  //   returns(uint256, address[] memory)
-  // {
-  //   return(useOfNFT[_tokenId].timeOfUse, useOfNFT[_tokenId].user);
-  // }
+  function showUseConditionOfNFT (
+    uint256 _tokenId
+  )
+    external
+    view
+    returns(uint256, address[] memory)
+  {
+    return(useOfNFT[_tokenId].timeOfUse, useOfNFT[_tokenId].user);
+  }
 /*************************************************************************************************************************/
   /**
    *Execution Function
