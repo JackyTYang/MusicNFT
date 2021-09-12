@@ -9,14 +9,23 @@ contract MusicNFT is
   NFTokenMetadata,
   Ownable
 {
+
+  address public _owner;  // 合约的所有者(创建者)
+
   /**
    * @dev Contract constructor. Sets metadata extension `name` and `symbol`.
    */
   constructor() payable
   {
+    _owner = msg.sender;
     nftName = "Jacky's Riff";
     nftSymbol = "JRIF";
   }
+
+  function transferToContract()
+    external
+    payable
+  {}
 
   /**
    * @dev Mints a new NFT.
@@ -167,7 +176,6 @@ contract MusicNFT is
     uint256 _tokenId
   )
     external
-    view
     returns (uint256 myshare)
   {
     myshare = sharers[_tokenId][msg.sender];
@@ -241,15 +249,17 @@ contract MusicNFT is
   }
 
   function setSharable(
-    uint256 _tokenId
+    uint256 _tokenId,
+    uint256 amount
   )
     external
-    payable
     ifOwner(_tokenId)
   {
     leftShare[_tokenId] = 100;
-    uint256 amount = (msg.value / 1 ether) * valueOfNFT[_tokenId] / 100;
+    // uint256 amount = (msg.value / 1 ether) * valueOfNFT[_tokenId] / 100;
     _addsharers(_tokenId, msg.sender, 100-amount);
+    uint256 fee = amount*valueOfNFT[_tokenId]/100;
+    payable(msg.sender).transfer(fee * 1 ether);
   }
 
   /**
@@ -313,6 +323,7 @@ contract MusicNFT is
     }//if sell all, delete from the seller
 
     sharers[_tokenId][msg.sender] = sharers[_tokenId][msg.sender] - shareSold;
+    payable(msg.sender).transfer(msg.value);
   }
 
   function useNFT(
