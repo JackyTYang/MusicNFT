@@ -12,7 +12,7 @@ contract MusicNFT is
   /**
    * @dev Contract constructor. Sets metadata extension `name` and `symbol`.
    */
-  constructor()
+  constructor() payable
   {
     nftName = "Jacky's Riff";
     nftSymbol = "JRIF";
@@ -56,6 +56,15 @@ contract MusicNFT is
 
   mapping (uint256 => uint256) internal tax;//user need to pay if they want a use of an NFT
 
+  struct MusicUseInstance{
+    uint256 tokenId;
+    uint256 timeOfUse;
+    address[] user;
+  }
+
+  mapping (uint256 => MusicUseInstance) internal useOfNFT;
+
+
 /*************************************************************************************************************************/
   /**
    *Modifier
@@ -86,6 +95,7 @@ contract MusicNFT is
   {
     value = valueOfNFT[_tokenId];
   }
+
 /*************************************************************************************************************************/
   /**
    *Execution Function
@@ -118,16 +128,51 @@ contract MusicNFT is
    *View Function
    */
 
-   /*show the sharability of NFT*/
-  function ifSharable(
+  /*show all the information of an NFT*/
+  function showInfoOfNFT(
     uint256 _tokenId
   )
     public
+    view
+    returns(bool result,
+    uint256 shareLeft,
+    uint256 taxToPay,
+    uint256 numOfSharers,
+    address[] memory ownersOfNFT,
+    uint256 usedTime,
+    address[] memory usedBy)
+  {
+    return(ifShared[_tokenId],
+    leftShare[_tokenId],
+    tax[_tokenId],
+    sharersCount[_tokenId],
+    owners[_tokenId],
+    useOfNFT[_tokenId].timeOfUse,
+    useOfNFT[_tokenId].user);
+  }
+
+
+  /*show the sharability of NFT*/
+  function ifSharable(
+    uint256 _tokenId
+  )
+    internal
     view
     returns(bool result)
   {
     result = ifShared[_tokenId];
   }
+
+  function showMySharerOfNFT(
+    uint256 _tokenId
+  )
+    external
+    view
+    returns (uint256 myshare)
+  {
+    myshare = sharers[_tokenId][msg.sender];
+  }
+
 
   function showLeftShare(
     uint256 _tokenId
@@ -159,15 +204,15 @@ contract MusicNFT is
     return owners[_tokenId];
   }
 
-  function showMySharerOfNFT(
-    uint256 _tokenId
-  )
-    external
-    view
-    returns (uint256 myshare)
-  {
-    myshare = sharers[_tokenId][msg.sender];
-  }
+  // function showInfoOfNFT1 (
+  //   uint256 _tokenId
+  // )
+  //   external
+  //   view
+  //   returns(uint256, address[] memory)
+  // {
+  //   return(useOfNFT[_tokenId].timeOfUse, useOfNFT[_tokenId].user);
+  // }
 /*************************************************************************************************************************/
   /**
    *Execution Function
@@ -176,7 +221,6 @@ contract MusicNFT is
   function initialize(
     uint256 _tokenId,
     bool _ifSharable,
-    uint256 sharedAmount,
     uint256 value,
     uint256 _tax
   )
@@ -184,7 +228,7 @@ contract MusicNFT is
     ifOwner(_tokenId)
   {
     if(_ifSharable == true){
-      _setSharable(_tokenId,sharedAmount);
+      ifShared[_tokenId] = true;
       _setTax(_tokenId,_tax);
     }
     else{
@@ -194,6 +238,18 @@ contract MusicNFT is
     }
       
     _setValue(_tokenId,value);
+  }
+
+  function setSharable(
+    uint256 _tokenId
+  )
+    external
+    payable
+    ifOwner(_tokenId)
+  {
+    leftShare[_tokenId] = 100;
+    uint256 amount = (msg.value / 1 ether) * valueOfNFT[_tokenId] / 100;
+    _addsharers(_tokenId, msg.sender, 100-amount);
   }
 
   /**
@@ -230,8 +286,33 @@ contract MusicNFT is
       owners[_tokenId].push(msg.sender);
     }//if sharers already, don't add
     sharers[_tokenId][msg.sender] = sharers[_tokenId][msg.sender] + shareGot;
-    address owner = idToOwner[_tokenId];
-    payable(owner).transfer(msg.value);//transfer to owner msg.value's CFX
+    // address owner = idToOwner[_tokenId];
+    // payable(owner).transfer(msg.value);//transfer to owner msg.value's CFX
+  }
+
+  function sellNFT(
+    uint256 _tokenId
+  )
+    external
+    payable
+    returns(uint256 shareSold)
+  {
+    uint256 fee = msg.value/ 1 ether;
+    require(fee >= valueOfNFT[_tokenId]/100,"NOT_ENOUGH_TO_SELL_1%");
+    require(fee <= (valueOfNFT[_tokenId]*sharers[_tokenId][msg.sender]/100),"TOO_MUCH_MONEY_TO_SELL_ALL");
+    shareSold = fee * 100 / valueOfNFT[_tokenId];
+    leftShare[_tokenId] = leftShare[_tokenId] + shareSold;
+    if(fee == valueOfNFT[_tokenId]*sharers[_tokenId][msg.sender]/100){//sell all
+      sharersCount[_tokenId] = sharersCount[_tokenId] - 1;
+      uint256 i = 0;
+      while(owners[_tokenId][i++] != msg.sender){}
+      for(i; i<owners[_tokenId].length; i++){
+        owners[_tokenId][i-1] = owners[_tokenId][i];
+      }
+      owners[_tokenId].pop();
+    }//if sell all, delete from the seller
+
+    sharers[_tokenId][msg.sender] = sharers[_tokenId][msg.sender] - shareSold;
   }
 
   function useNFT(
@@ -241,11 +322,16 @@ contract MusicNFT is
     payable
     returns(uint256 cost)
   {
+    /*store the use information in the mapping and struct*/
+    useOfNFT[_tokenId].tokenId = _tokenId;
+    useOfNFT[_tokenId].timeOfUse++;
+    useOfNFT[_tokenId].user.push(msg.sender);
+
+    /*judge if the user is a sharer*/
     cost = 0;
     uint256 i = 0;
     uint256 j = owners[_tokenId].length;
     bool flag = false;
-    //  mapping (uint256 => address []) internal owners;//each NFT has some sharers
     while(j!=0){
       if(msg.sender == owners[_tokenId][i]){
         flag = true;
@@ -257,6 +343,7 @@ contract MusicNFT is
       }
     }
     
+    /*distribute tax*/
     address temp;
     uint256 share;
     uint256 m=0;
@@ -321,17 +408,17 @@ contract MusicNFT is
   //   }
   // }
 
-  function _setSharable(
-    uint256 _tokenId,
-    uint256 subscribableAmount
-  )
-    internal
-    ifOwner(_tokenId)
-  {
-    ifShared[_tokenId] = true;
-    leftShare[_tokenId] = 100;
-    _addsharers(_tokenId, msg.sender, 100-subscribableAmount);
-  }
+  // function _setSharable(
+  //   uint256 _tokenId,
+  //   uint256 subscribableAmount
+  // )
+  //   internal
+  //   ifOwner(_tokenId)
+  // {
+  //   ifShared[_tokenId] = true;
+  //   leftShare[_tokenId] = 100;
+  //   _addsharers(_tokenId, msg.sender, 100-subscribableAmount);
+  // }
 
   /*set the value of each NFT by owner*/
   function _setValue(
@@ -353,5 +440,13 @@ contract MusicNFT is
   {
     tax[_tokenId] = _tax;
   }
+
+  // 取当前合约的地址
+	function getAddress() 
+    public 
+    view 
+    returns (address) {
+		return address(this);
+	}
 
 }
