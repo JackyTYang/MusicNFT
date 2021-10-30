@@ -43,7 +43,7 @@ contract MusicNFT is
   {
     super._mint(_to, _tokenId);
     super._setTokenUri(_tokenId, _uri);
-    ifShared[_tokenId] = false;
+    idToNFT[_tokenId].ifShared = false;
   }
 
 /*************************************************************************************************************************/
@@ -51,19 +51,30 @@ contract MusicNFT is
    *Basic data structure
    *Would be better if it's in a struct
    */
-  mapping (uint256 => uint256) internal valueOfNFT;
 
-  mapping (uint256 => bool) internal ifShared;//if a token is shared, it is also not transactable
+  mapping (uint256 => NFT) internal idToNFT;  
+  struct NFT{
+    uint256 valueOfNFT;
+    bool ifShared;
+    mapping(address => uint256) amountOfEachSharer;
+    address [] owners;
+    uint256 sharersCount;
+    uint256 leftShare;
+    uint256 tax;
+  }
+  // mapping (uint256 => uint256) internal valueOfNFT;
 
-  mapping (uint256 => mapping(address => uint256)) internal sharers;///each sharers of an NFT has a certain amount of share
+  // mapping (uint256 => bool) internal ifShared;//if a token is shared, it is also not transactable
 
-  mapping (uint256 => address []) internal owners;//each NFT has some sharers
+  // mapping (uint256 => mapping(address => uint256)) internal sharers;///each sharers of an NFT has a certain amount of share
 
-  mapping (uint256 => uint256) internal sharersCount;//number of sharers in each mapping ( address => uint256)
+  // mapping (uint256 => address []) internal owners;//each NFT has some sharers
 
-  mapping (uint256 => uint256) internal leftShare;//amount of an NFT's share having been held
+  // mapping (uint256 => uint256) internal sharersCount;//number of sharers in each mapping ( address => uint256)
 
-  mapping (uint256 => uint256) internal tax;//user need to pay if they want a use of an NFT
+  // mapping (uint256 => uint256) internal leftShare;//amount of an NFT's share having been held
+
+  // mapping (uint256 => uint256) internal tax;//user need to pay if they want a use of an NFT
 
   struct MusicUseInstance{
     uint256 tokenId;
@@ -102,7 +113,7 @@ contract MusicNFT is
     view
     returns(uint256 value)
   {
-    value = valueOfNFT[_tokenId];
+    value = idToNFT[_tokenId].valueOfNFT;
   }
 
 /*************************************************************************************************************************/
@@ -124,7 +135,7 @@ contract MusicNFT is
     address tokenOwner = idToOwner[_tokenId];
     require(tokenOwner == _from, NOT_OWNER);
     require(_to != address(0), ZERO_ADDRESS);
-    require(ifShared[_tokenId] == false,"NFT_BEEN_STAKED");
+    require(idToNFT[_tokenId].ifShared == false,"NFT_BEEN_STAKED");
 
     _transfer(_to, _tokenId);
   }
@@ -151,11 +162,11 @@ contract MusicNFT is
     uint256 usedTime,
     address[] memory usedBy)
   {
-    return(ifShared[_tokenId],
-    leftShare[_tokenId],
-    tax[_tokenId],
-    sharersCount[_tokenId],
-    owners[_tokenId],
+    return(idToNFT[_tokenId].ifShared,
+    idToNFT[_tokenId].leftShare,
+    idToNFT[_tokenId].tax,
+    idToNFT[_tokenId].sharersCount,
+    idToNFT[_tokenId].owners,
     useOfNFT[_tokenId].timeOfUse,
     useOfNFT[_tokenId].user);
   }
@@ -169,16 +180,17 @@ contract MusicNFT is
     view
     returns(bool result)
   {
-    result = ifShared[_tokenId];
+    result = idToNFT[_tokenId].ifShared;
   }
 
   function showMySharerOfNFT(
     uint256 _tokenId
   )
     external
+    view
     returns (uint256 myshare)
   {
-    myshare = sharers[_tokenId][msg.sender];
+    myshare = idToNFT[_tokenId].amountOfEachSharer[msg.sender];
   }
 
 
@@ -189,7 +201,7 @@ contract MusicNFT is
     view
     returns(uint256 left)
   {
-    left = leftShare[_tokenId];
+    left = idToNFT[_tokenId].leftShare;
   }
 
   function showNumOfSharers(
@@ -199,7 +211,7 @@ contract MusicNFT is
     view
     returns(uint256 num)
   {
-    num = sharersCount[_tokenId];
+    num = idToNFT[_tokenId].sharersCount;
   }
 
   function showSharers(
@@ -209,7 +221,7 @@ contract MusicNFT is
     view
     returns (address[] memory)
   {
-    return owners[_tokenId];
+    return idToNFT[_tokenId].owners;
   }
 
   function showUseConditionOfNFT (
@@ -236,12 +248,12 @@ contract MusicNFT is
     ifOwner(_tokenId)
   {
     if(_ifSharable == true){
-      ifShared[_tokenId] = true;
+      idToNFT[_tokenId].ifShared = true;
       _setTax(_tokenId,_tax);
     }
     else{
-      ifShared[_tokenId] = false;
-      leftShare[_tokenId] = 100;
+      idToNFT[_tokenId].ifShared = false;
+      idToNFT[_tokenId].leftShare = 100;
       _addsharers(_tokenId, msg.sender, 100);
     }
       
@@ -255,10 +267,10 @@ contract MusicNFT is
     external
     ifOwner(_tokenId)
   {
-    leftShare[_tokenId] = 100;
+    idToNFT[_tokenId].leftShare = 100;
     // uint256 amount = (msg.value / 1 ether) * valueOfNFT[_tokenId] / 100;
     _addsharers(_tokenId, msg.sender, 100-amount);
-    uint256 fee = amount*valueOfNFT[_tokenId]/100;
+    uint256 fee = amount*(idToNFT[_tokenId].valueOfNFT)/100;
     payable(msg.sender).transfer(fee * 1 ether);
   }
 
@@ -286,16 +298,16 @@ contract MusicNFT is
   {
     uint256 fee = msg.value/ 1 ether;
     require(ifSharable(_tokenId),"NFT_NOT_SHARABLE");
-    require(leftShare[_tokenId]>0,"NFT_SHARE_SOLD_OUT");
-    require(fee >= valueOfNFT[_tokenId]/100,"NOT_ENOUGH_TO_BUY_1%");
-    require(fee <= (valueOfNFT[_tokenId]*leftShare[_tokenId]/100),"TOO_MUCH_MONEY");
-    shareGot = fee * 100 / valueOfNFT[_tokenId];
-    leftShare[_tokenId] = leftShare[_tokenId] - shareGot;
-    if(sharers[_tokenId][msg.sender] == 0){
-      sharersCount[_tokenId] = sharersCount[_tokenId] + 1;
-      owners[_tokenId].push(msg.sender);
+    require(idToNFT[_tokenId].leftShare>0,"NFT_SHARE_SOLD_OUT");
+    require(fee >= idToNFT[_tokenId].valueOfNFT/100,"NOT_ENOUGH_TO_BUY_1%");
+    require(fee <= (idToNFT[_tokenId].valueOfNFT*idToNFT[_tokenId].leftShare/100),"TOO_MUCH_MONEY");
+    shareGot = fee * 100 / idToNFT[_tokenId].valueOfNFT;
+    idToNFT[_tokenId].leftShare = idToNFT[_tokenId].leftShare - shareGot;
+    if(idToNFT[_tokenId].amountOfEachSharer[msg.sender] == 0){
+      idToNFT[_tokenId].sharersCount = idToNFT[_tokenId].sharersCount + 1;
+      idToNFT[_tokenId].owners.push(msg.sender);
     }//if sharers already, don't add
-    sharers[_tokenId][msg.sender] = sharers[_tokenId][msg.sender] + shareGot;
+    idToNFT[_tokenId].amountOfEachSharer[msg.sender] = idToNFT[_tokenId].amountOfEachSharer[msg.sender] + shareGot;
     // address owner = idToOwner[_tokenId];
     // payable(owner).transfer(msg.value);//transfer to owner msg.value's CFX
   }
@@ -308,21 +320,21 @@ contract MusicNFT is
     returns(uint256 shareSold)
   {
     uint256 fee = msg.value/ 1 ether;
-    require(fee >= valueOfNFT[_tokenId]/100,"NOT_ENOUGH_TO_SELL_1%");
-    require(fee <= (valueOfNFT[_tokenId]*sharers[_tokenId][msg.sender]/100),"TOO_MUCH_MONEY_TO_SELL_ALL");
-    shareSold = fee * 100 / valueOfNFT[_tokenId];
-    leftShare[_tokenId] = leftShare[_tokenId] + shareSold;
-    if(fee == valueOfNFT[_tokenId]*sharers[_tokenId][msg.sender]/100){//sell all
-      sharersCount[_tokenId] = sharersCount[_tokenId] - 1;
+    require(fee >= idToNFT[_tokenId].valueOfNFT/100,"NOT_ENOUGH_TO_SELL_1%");
+    require(fee <= (idToNFT[_tokenId].valueOfNFT*idToNFT[_tokenId].amountOfEachSharer[msg.sender]/100),"TOO_MUCH_MONEY_TO_SELL_ALL");
+    shareSold = fee * 100 / idToNFT[_tokenId].valueOfNFT;
+    idToNFT[_tokenId].leftShare = idToNFT[_tokenId].leftShare + shareSold;
+    if(fee == idToNFT[_tokenId].valueOfNFT*idToNFT[_tokenId].amountOfEachSharer[msg.sender]/100){//sell all
+      idToNFT[_tokenId].sharersCount = idToNFT[_tokenId].sharersCount - 1;
       uint256 i = 0;
-      while(owners[_tokenId][i++] != msg.sender){}
-      for(i; i<owners[_tokenId].length; i++){
-        owners[_tokenId][i-1] = owners[_tokenId][i];
+      while(idToNFT[_tokenId].owners[i++] != msg.sender){}
+      for(i; i<idToNFT[_tokenId].owners.length; i++){
+        idToNFT[_tokenId].owners[i-1] = idToNFT[_tokenId].owners[i];
       }
-      owners[_tokenId].pop();
+      idToNFT[_tokenId].owners.pop();
     }//if sell all, delete from the seller
 
-    sharers[_tokenId][msg.sender] = sharers[_tokenId][msg.sender] - shareSold;
+    idToNFT[_tokenId].amountOfEachSharer[msg.sender] = idToNFT[_tokenId].amountOfEachSharer[msg.sender] - shareSold;
     payable(msg.sender).transfer(msg.value);
   }
 
@@ -341,10 +353,10 @@ contract MusicNFT is
     /*judge if the user is a sharer*/
     cost = 0;
     uint256 i = 0;
-    uint256 j = owners[_tokenId].length;
+    uint256 j = idToNFT[_tokenId].owners.length;
     bool flag = false;
     while(j!=0){
-      if(msg.sender == owners[_tokenId][i]){
+      if(msg.sender == idToNFT[_tokenId].owners[i]){
         flag = true;
         j=0;
       }
@@ -361,15 +373,15 @@ contract MusicNFT is
     uint256 n;
     if(flag == false){
       // _distributeTax(_tokenId,tax[_tokenId]);
-      cost = tax[_tokenId];
-      n = owners[_tokenId].length;
+      cost = idToNFT[_tokenId].tax;
+      n = idToNFT[_tokenId].owners.length;
       while(n!=0){
-        temp = owners[_tokenId][m];
-        share = sharers[_tokenId][temp];
+        temp = idToNFT[_tokenId].owners[m];
+        share = idToNFT[_tokenId].amountOfEachSharer[temp];
         m++;
         n--;
         // mapping (uint256 => mapping(address => uint256)) internal sharers;
-        payable(temp).transfer( (share * tax[_tokenId] / 100) * 1 ether);
+        payable(temp).transfer( (share * idToNFT[_tokenId].tax / 100) * 1 ether);
       }
     }
       
@@ -391,12 +403,12 @@ contract MusicNFT is
       ifOwner(_tokenId)
     {
     // require(ifSharable(_tokenId),"TOKEN_UNSHARABLE");
-    require(sharers[_tokenId][newSharer]==0,"ALREADY_A_SHARER");
-    require(share >=1 && share <=leftShare[_tokenId],"SHARE_INVALID");
-    sharersCount[_tokenId] = sharersCount[_tokenId] + 1;
-    sharers[_tokenId][newSharer] = share;
-    leftShare[_tokenId] = leftShare[_tokenId] - share;
-    owners[_tokenId].push(msg.sender);
+    require(idToNFT[_tokenId].amountOfEachSharer[newSharer]==0,"ALREADY_A_SHARER");
+    require(share >=1 && share <=idToNFT[_tokenId].leftShare,"SHARE_INVALID");
+    idToNFT[_tokenId].sharersCount = idToNFT[_tokenId].sharersCount + 1;
+    idToNFT[_tokenId].amountOfEachSharer[newSharer] = share;
+    idToNFT[_tokenId].leftShare = idToNFT[_tokenId].leftShare - share;
+    idToNFT[_tokenId].owners.push(msg.sender);
   }
 
   // function _distributeTax(
@@ -439,7 +451,7 @@ contract MusicNFT is
     internal
     ifOwner(_tokenId)
   {
-    valueOfNFT[_tokenId] = value;
+    idToNFT[_tokenId].valueOfNFT = value;
   }
 
    function _setTax(
@@ -449,7 +461,7 @@ contract MusicNFT is
     internal
     ifOwner(_tokenId)
   {
-    tax[_tokenId] = _tax;
+    idToNFT[_tokenId].tax = _tax;
   }
 
   // 取当前合约的地址
