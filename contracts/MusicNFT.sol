@@ -44,6 +44,9 @@ contract MusicNFT is
     super._mint(_to, _tokenId);
     super._setTokenUri(_tokenId, _uri);
     idToNFT[_tokenId].ifShared = false;
+    myNFT[msg.sender].push(_tokenId);
+    NFTOwnership memory temp = NFTOwnership({owner:_to,wayOfOwn:0});
+    OwnershipChange[_tokenId].push(temp);
   }
 
 /*************************************************************************************************************************/
@@ -62,6 +65,23 @@ contract MusicNFT is
     uint256 leftShare;
     uint256 tax;
   }
+
+  struct NFTOwnership{
+    address owner;
+    uint256 wayOfOwn;//0:minter,1:transfer,2:auction
+  }
+  mapping (uint256 => NFTOwnership[]) OwnershipChange;
+  function showOwnershipChange(
+    uint256 _nftId
+  )
+  public
+  view
+  returns(NFTOwnership[] memory ChangeOfNFTOwnership)
+  {
+    ChangeOfNFTOwnership = OwnershipChange[_nftId];
+  }
+
+  
   // mapping (uint256 => uint256) internal valueOfNFT;
 
   // mapping (uint256 => bool) internal ifShared;//if a token is shared, it is also not transactable
@@ -84,6 +104,8 @@ contract MusicNFT is
 
   mapping (uint256 => MusicUseInstance) internal useOfNFT;
 
+  mapping (address => uint256[]) internal myNFT;
+
 
 /*************************************************************************************************************************/
   /**
@@ -98,7 +120,7 @@ contract MusicNFT is
   /**
    *Basic transaction
    */
-
+  
    /**
    *View Function
    */
@@ -116,6 +138,14 @@ contract MusicNFT is
     value = idToNFT[_tokenId].valueOfNFT;
   }
 
+  function showMyNFT ()
+    public
+    view
+    returns(uint256[] memory _myNFT)
+  {
+    _myNFT = myNFT[msg.sender];
+  }
+
 /*************************************************************************************************************************/
   /**
    *Execution Function
@@ -127,7 +157,7 @@ contract MusicNFT is
     address _to,
     uint256 _tokenId
   )
-    external
+    public
     override
     canTransfer(_tokenId)
     validNFToken(_tokenId)
@@ -136,7 +166,8 @@ contract MusicNFT is
     require(tokenOwner == _from, NOT_OWNER);
     require(_to != address(0), ZERO_ADDRESS);
     require(idToNFT[_tokenId].ifShared == false,"NFT_BEEN_STAKED");
-
+    NFTOwnership memory temp = NFTOwnership({owner:_to,wayOfOwn:1});
+    OwnershipChange[_tokenId].push(temp);
     _transfer(_to, _tokenId);
   }
 /*************************************************************************************************************************/
@@ -154,7 +185,7 @@ contract MusicNFT is
   )
     public
     view
-    returns(bool result,
+    returns(bool ifShared,
     uint256 shareLeft,
     uint256 taxToPay,
     uint256 numOfSharers,

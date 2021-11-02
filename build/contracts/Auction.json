@@ -1,0 +1,281 @@
+{
+  "contractName": "Auction",
+  "abi": [],
+  "metadata": "{\"compiler\":{\"version\":\"0.8.6+commit.11564f7e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/Auction.sol\":\"Auction\"},\"evmVersion\":\"berlin\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/Auction.sol\":{\"keccak256\":\"0xa08017caa7096580df8ad9c8e711e9b7260c36e8bba583e14bef7ef2c03245a9\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://efbb936dcdeee2e5f10b2bb136f11fb4498cdbb629cbb49b020ed806546ff7c8\",\"dweb:/ipfs/QmSbFnopdzdSLyGtZJ7Y4Cf8cH28cc8WzvTDGkT4wvkq65\"]},\"project:/contracts/MusicNFT.sol\":{\"keccak256\":\"0xd1ad1193326036e4b2268d9f19afab030e719627a11ae4bc8790cf03067916ec\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://6397874adc9d07f2fb9be01f17dc67f345308dc2ec77225a667ac02d2a3622c8\",\"dweb:/ipfs/QmNhAe6R8gFnED4d4vP3h2fe1xDTyqUwXPR2NLEj4jDvWo\"]},\"project:/contracts/ownership/ownable.sol\":{\"keccak256\":\"0xf32759667b20bd3a1318ef3ff563031543295d03a4cb179fa5158e791977a0aa\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://52e331754b7816442fcd79a6c2b4485549225b801296a312e63d015c9c8ac3cb\",\"dweb:/ipfs/QmXPwkiEMaEyuEcMR3jHo18kkxS1ioyB8WnVK5neoEmdGQ\"]},\"project:/contracts/tokens/erc721-metadata.sol\":{\"keccak256\":\"0x42f83c7b536d7356e6c0ad76906aec2d4788174c3bc2ff6932689d79f84593e3\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://63f4cc120bb4a795b76c75890472067f934ee266f99df4a605782e82b0384f46\",\"dweb:/ipfs/QmRDFCRSsj13kGD4M4Sfpag5QLH6n7jwSpeDTRk6JiRpnk\"]},\"project:/contracts/tokens/erc721-token-receiver.sol\":{\"keccak256\":\"0x841d6c556e9813b2276ed73c295f984ef9229b2f082ad458de196aa5aeebd483\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://44869eb9eaa25fada3db53623a3807e233ff2856c1f3c03dd248b6b3a9180672\",\"dweb:/ipfs/QmV7apf2bACmGtmRgCXfQjVmaKYpAP4MmaJq16swCPmc4V\"]},\"project:/contracts/tokens/erc721.sol\":{\"keccak256\":\"0x96c3cef85c3ff14676494b4ee580330449a3f1dc625d63132da14825d64c9eff\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://286ead0a0462452fbd9008a01a7aebe02b1b84c10c7e0be9bb8aeff0d4bb04f6\",\"dweb:/ipfs/QmcmJiRmCkViPkkVGgj9WANhrZzWC6X9QtzvZrSiqT8kCg\"]},\"project:/contracts/tokens/nf-token-metadata.sol\":{\"keccak256\":\"0xa91f58d3ceb8e2685bae3c367257c8d5aa880b6fb534817a44b735718b6711d2\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://ca75804486d71273bc17f60b069f3515cdde425ffaa87cb565546328f31742a0\",\"dweb:/ipfs/QmcgDQ4uvLCNw5eRw5FT4h7jUNtHJbPZnfn6jh36Cpm5x9\"]},\"project:/contracts/tokens/nf-token.sol\":{\"keccak256\":\"0xd18f3691d0a52df5c22a1557230ca8b319a4c41801fbd2eb4fe2c8bcdad8ad7e\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://9cb8be1fc63ae8bac4d4a6a9d6a706f4a3fe869406a0d0f555b4a5b7243fb580\",\"dweb:/ipfs/QmQcBdEULE19kPQciM6X6NHeaxk79FXFWPdd7F2ax6HvQP\"]},\"project:/contracts/utils/address-utils.sol\":{\"keccak256\":\"0x29cdeb28f1e34c1239b2f82d689e0ffd6b8a95daf603d5433c893074f3ccb7f9\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://30c95907b58747d92a0a53135d8de085a2e44335af62ec00c67ab4739742a595\",\"dweb:/ipfs/QmUGiu6HXg3rL3RfDKjH95jksjEmTcagNEc5id7DDBWpnk\"]},\"project:/contracts/utils/erc165.sol\":{\"keccak256\":\"0xd8c18f29926bf75aace3103a010f542399b6975d3f0a76e8b3f07f4c2fd55b0a\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://015f502839b075ace581add5da64411cacb6ccf1db0528c4e8efce29fb095f3b\",\"dweb:/ipfs/QmXaT1YBbnVFbGpG4Zrv6WuS7QDUyJGb6Gr7xEbGFEpWYE\"]},\"project:/contracts/utils/supports-interface.sol\":{\"keccak256\":\"0x1efe9984a265a0e4a2f2d795770e97419c2f265805a83b9a2b5502e5f8c36616\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://a9cc02a91a6d7b593feba6ee666f237f284710edbb4f32d1c8b701b83c69d596\",\"dweb:/ipfs/QmUkz7r8zGU8trjf7bk8cLo9sKEDMyVR6KQTdNoRU7317o\"]}},\"version\":1}",
+  "bytecode": "0x6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea2646970667358221220283443cbea24d774f218bbdcd33ca9bb06cd743bd95b7f1839c158632aba570164736f6c63430008060033",
+  "deployedBytecode": "0x6080604052600080fdfea2646970667358221220283443cbea24d774f218bbdcd33ca9bb06cd743bd95b7f1839c158632aba570164736f6c63430008060033",
+  "immutableReferences": {},
+  "generatedSources": [],
+  "deployedGeneratedSources": [],
+  "sourceMap": "88:82:0:-:0;;;;;;;;;;;;;;;;;;;",
+  "deployedSourceMap": "88:82:0:-:0;;;;;",
+  "source": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.0;\r\n\r\nimport \"./MusicNFT.sol\";\r\n\r\ncontract Auction{\r\n    \r\n\r\n    struct history{\r\n        uint256 offer;\r\n    }\r\n\r\n}",
+  "sourcePath": "C:\\Users\\jacky\\Desktop\\BlockChainProj\\MusicNFT\\contracts\\Auction.sol",
+  "ast": {
+    "absolutePath": "project:/contracts/Auction.sol",
+    "exportedSymbols": {
+      "AddressUtils": [
+        3447
+      ],
+      "Auction": [
+        6
+      ],
+      "ERC165": [
+        3459
+      ],
+      "ERC721": [
+        2308
+      ],
+      "ERC721Metadata": [
+        2177
+      ],
+      "ERC721TokenReceiver": [
+        2195
+      ],
+      "MusicNFT": [
+        1759
+      ],
+      "NFToken": [
+        3415
+      ],
+      "NFTokenMetadata": [
+        2745
+      ],
+      "Ownable": [
+        2125
+      ],
+      "SupportsInterface": [
+        3496
+      ]
+    },
+    "id": 7,
+    "license": "MIT",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 1,
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "33:23:0"
+      },
+      {
+        "absolutePath": "project:/contracts/MusicNFT.sol",
+        "file": "./MusicNFT.sol",
+        "id": 2,
+        "nameLocation": "-1:-1:-1",
+        "nodeType": "ImportDirective",
+        "scope": 7,
+        "sourceUnit": 1760,
+        "src": "60:24:0",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": true,
+        "id": 6,
+        "linearizedBaseContracts": [
+          6
+        ],
+        "name": "Auction",
+        "nameLocation": "97:7:0",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "canonicalName": "Auction.history",
+            "id": 5,
+            "members": [
+              {
+                "constant": false,
+                "id": 4,
+                "mutability": "mutable",
+                "name": "offer",
+                "nameLocation": "152:5:0",
+                "nodeType": "VariableDeclaration",
+                "scope": 5,
+                "src": "144:13:0",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                },
+                "typeName": {
+                  "id": 3,
+                  "name": "uint256",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "144:7:0",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "visibility": "internal"
+              }
+            ],
+            "name": "history",
+            "nameLocation": "126:7:0",
+            "nodeType": "StructDefinition",
+            "scope": 6,
+            "src": "119:46:0",
+            "visibility": "public"
+          }
+        ],
+        "scope": 7,
+        "src": "88:82:0",
+        "usedErrors": []
+      }
+    ],
+    "src": "33:137:0"
+  },
+  "legacyAST": {
+    "absolutePath": "project:/contracts/Auction.sol",
+    "exportedSymbols": {
+      "AddressUtils": [
+        3447
+      ],
+      "Auction": [
+        6
+      ],
+      "ERC165": [
+        3459
+      ],
+      "ERC721": [
+        2308
+      ],
+      "ERC721Metadata": [
+        2177
+      ],
+      "ERC721TokenReceiver": [
+        2195
+      ],
+      "MusicNFT": [
+        1759
+      ],
+      "NFToken": [
+        3415
+      ],
+      "NFTokenMetadata": [
+        2745
+      ],
+      "Ownable": [
+        2125
+      ],
+      "SupportsInterface": [
+        3496
+      ]
+    },
+    "id": 7,
+    "license": "MIT",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 1,
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "33:23:0"
+      },
+      {
+        "absolutePath": "project:/contracts/MusicNFT.sol",
+        "file": "./MusicNFT.sol",
+        "id": 2,
+        "nameLocation": "-1:-1:-1",
+        "nodeType": "ImportDirective",
+        "scope": 7,
+        "sourceUnit": 1760,
+        "src": "60:24:0",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": true,
+        "id": 6,
+        "linearizedBaseContracts": [
+          6
+        ],
+        "name": "Auction",
+        "nameLocation": "97:7:0",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "canonicalName": "Auction.history",
+            "id": 5,
+            "members": [
+              {
+                "constant": false,
+                "id": 4,
+                "mutability": "mutable",
+                "name": "offer",
+                "nameLocation": "152:5:0",
+                "nodeType": "VariableDeclaration",
+                "scope": 5,
+                "src": "144:13:0",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                },
+                "typeName": {
+                  "id": 3,
+                  "name": "uint256",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "144:7:0",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "visibility": "internal"
+              }
+            ],
+            "name": "history",
+            "nameLocation": "126:7:0",
+            "nodeType": "StructDefinition",
+            "scope": 6,
+            "src": "119:46:0",
+            "visibility": "public"
+          }
+        ],
+        "scope": 7,
+        "src": "88:82:0",
+        "usedErrors": []
+      }
+    ],
+    "src": "33:137:0"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.8.6+commit.11564f7e.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.4.3",
+  "updatedAt": "2021-10-31T05:05:26.131Z",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  }
+}

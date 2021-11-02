@@ -52,11 +52,11 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
   constructor(
     string memory name_,
     string memory symbol_,
-    uint256 totalSupply
+    uint256 totalSupply_
   ) {
     _name = name_;
     _symbol = symbol_;
-    _mint(_msgSender(), totalSupply);
+    _mint(_msgSender(), totalSupply_);
   }
 
   /**
